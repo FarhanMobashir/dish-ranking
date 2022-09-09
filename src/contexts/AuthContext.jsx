@@ -1,22 +1,33 @@
 import { createContext, useContext, useState } from "react";
+import { useLocalStorage } from "../hooks/useLocalStorage";
 
 export const AuthContext = createContext();
 
 AuthContext.displayName = "AuthContext";
 
 export const AuthProvider = ({ children }) => {
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [user, setUser] = useLocalStorage("user", {
+    userData: {},
+    isLoggedIn: false,
+  });
 
-  const login = () => {
-    setIsLoggedIn(true);
+  const login = (user) => {
+    setUser({
+      userData: user,
+      isLoggedIn: true,
+    });
   };
 
   const logout = () => {
-    setIsLoggedIn(false);
+    setUser({
+      userData: {},
+      isLoggedIn: false,
+    });
+    localStorage.removeItem("user");
   };
 
   return (
-    <AuthContext.Provider value={{ isLoggedIn, login, logout }}>
+    <AuthContext.Provider value={{ login, logout, user }}>
       {children}
     </AuthContext.Provider>
   );
